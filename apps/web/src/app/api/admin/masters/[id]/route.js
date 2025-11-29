@@ -1,6 +1,13 @@
 import sql from "@/app/api/utils/sql";
+import { requireAdmin, forbiddenResponse } from "@/app/api/utils/auth-helper";
 
 export async function PUT(request, { params: { id } }) {
+  // Require admin authentication
+  const session = await requireAdmin(request);
+  if (!session) {
+    return forbiddenResponse();
+  }
+
   try {
     const body = await request.json();
     const { name, title, bio, profile_image, rating, monthly_price } = body;

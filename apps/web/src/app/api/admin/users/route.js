@@ -1,6 +1,13 @@
 import sql from "@/app/api/utils/sql";
+import { requireAdmin, forbiddenResponse } from "@/app/api/utils/auth-helper";
 
 export async function GET(request) {
+  // Require admin authentication
+  const session = await requireAdmin(request);
+  if (!session) {
+    return forbiddenResponse();
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const q = (searchParams.get("q") || "").trim();
@@ -30,6 +37,12 @@ export async function GET(request) {
 
 // Added POST to create or upsert a user and (optionally) create a Stripe test customer
 export async function POST(request) {
+  // Require admin authentication
+  const session = await requireAdmin(request);
+  if (!session) {
+    return forbiddenResponse();
+  }
+
   try {
     const body = await request.json().catch(() => ({}));
     const email = (body.email || "").trim().toLowerCase();

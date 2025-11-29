@@ -9,19 +9,15 @@ export async function POST(request) {
       return Response.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Ensure user exists
-    const existing = await sql`SELECT * FROM users WHERE email = ${email}`;
-    let user;
-    if (existing.length === 0) {
-      const inserted = await sql`
-        INSERT INTO users (email, name)
-        VALUES (${email}, 'Chess Student')
-        RETURNING *
-      `;
-      user = inserted[0];
-    } else {
-      user = existing[0];
-    }
+    // Ensure user exists (using UPSERT to prevent race conditions)
+    const users = await sql`
+      INSERT INTO users (email, name)
+      VALUES (${email}, 'Chess Student')
+      ON CONFLICT (email)
+      DO UPDATE SET email = EXCLUDED.email
+      RETURNING *
+    `;
+    const user = users[0];
 
     // Update ratings (nullable)
     await sql`

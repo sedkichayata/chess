@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import Stripe from "stripe";
+import { isValidEmail, isValidRedirectURL, getBaseUrl } from "@/app/api/utils/validation";
 
 // Prefer user-provided STRIPE secret, fallback to platform default
 const STRIPE_KEY = process.env.STRIPE || process.env.STRIPE_SECRET_KEY;
@@ -7,7 +8,6 @@ const STRIPE_KEY = process.env.STRIPE || process.env.STRIPE_SECRET_KEY;
 export async function POST(request) {
   // Validate Stripe key early
   if (!STRIPE_KEY) {
-    console.error("Stripe not configured: missing secret key");
     return Response.json(
       { error: "Stripe is not configured on the server" },
       { status: 500 },
@@ -19,9 +19,27 @@ export async function POST(request) {
   try {
     const { sessionId, studentEmail, redirectURL } = await request.json();
 
+    // Validate required fields
     if (!sessionId || !studentEmail || !redirectURL) {
       return Response.json(
         { error: "Missing required fields" },
+        { status: 400 },
+      );
+    }
+
+    // Validate email format
+    if (!isValidEmail(studentEmail)) {
+      return Response.json(
+        { error: "Invalid email address" },
+        { status: 400 },
+      );
+    }
+
+    // Validate redirect URL against whitelist
+    const baseUrl = process.env.APP_URL || request.headers.get('origin') || '';
+    if (!isValidRedirectURL(redirectURL, baseUrl)) {
+      return Response.json(
+        { error: "Invalid redirect URL" },
         { status: 400 },
       );
     }
@@ -39,20 +57,15 @@ export async function POST(request) {
       await sql`SELECT * FROM masters WHERE id = ${session.master_id}`;
     const master = masters[0];
 
-    // Get or create user
-    let users = await sql`SELECT * FROM users WHERE email = ${studentEmail}`;
-    let user;
-
-    if (users.length === 0) {
-      const newUsers = await sql`
-        INSERT INTO users (email, name) 
-        VALUES (${studentEmail}, 'Chess Student')
-        RETURNING *
-      `;
-      user = newUsers[0];
-    } else {
-      user = users[0];
-    }
+    // Get or create user (using UPSERT to prevent race conditions)
+    const users = await sql`
+      INSERT INTO users (email, name)
+      VALUES (${studentEmail}, 'Chess Student')
+      ON CONFLICT (email)
+      DO UPDATE SET email = EXCLUDED.email
+      RETURNING *
+    `;
+    const user = users[0];
 
     // Get or create Stripe customer
     let stripeCustomerId = user.stripe_customer_id;
@@ -103,7 +116,10 @@ export async function POST(request) {
       sessionId: checkoutSession.id,
     });
   } catch (error) {
-    console.error("Stripe session booking error:", error);
+    // Log error securely (in production, use proper logging service)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Stripe session booking error:", error);
+    }
     return Response.json(
       { error: "Payment processing failed" },
       { status: 500 },

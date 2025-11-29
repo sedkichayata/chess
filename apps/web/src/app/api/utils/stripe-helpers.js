@@ -43,11 +43,18 @@ export const makeAbsolute = (url, baseUrl) => {
 export const getOrCreateStripeCustomer = async (email, name) => {
   if (!stripe) throw new Error("Stripe is not configured");
 
-  let users;
+  // Use UPSERT to prevent race conditions
+  let user;
   try {
-    users = await sql`SELECT * FROM users WHERE email = ${email}`;
+    const users = await sql`
+      INSERT INTO users (email, name)
+      VALUES (${email}, ${name || "Chess Student"})
+      ON CONFLICT (email)
+      DO UPDATE SET email = EXCLUDED.email
+      RETURNING *
+    `;
+    user = users[0];
   } catch (error) {
-    console.error("Database error in getOrCreateStripeCustomer:", error);
     // If the error suggests HTML response, it's likely a bad DATABASE_URL
     if (error.message && error.message.includes("Unexpected token")) {
       throw new Error(
@@ -55,23 +62,6 @@ export const getOrCreateStripeCustomer = async (email, name) => {
       );
     }
     throw error;
-  }
-  let user;
-
-  if (users.length === 0) {
-    try {
-      const newUsers = await sql`
-        INSERT INTO users (email, name) 
-        VALUES (${email}, ${name || "Chess Student"})
-        RETURNING *
-      `;
-      user = newUsers[0];
-    } catch (error) {
-      console.error("Database error creating user:", error);
-      throw error;
-    }
-  } else {
-    user = users[0];
   }
 
   let stripeCustomerId = user.stripe_customer_id;

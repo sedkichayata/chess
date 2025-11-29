@@ -1,15 +1,21 @@
 import { neon } from '@neondatabase/serverless';
 
-const NullishQueryFunction = () => {
-  throw new Error(
-    'No database connection string was provided to `neon()`. Perhaps process.env.DATABASE_URL has not been set'
-  );
-};
-NullishQueryFunction.transaction = () => {
-  throw new Error(
-    'No database connection string was provided to `neon()`. Perhaps process.env.DATABASE_URL has not been set'
-  );
-};
-const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : NullishQueryFunction;
+// Validate DATABASE_URL at module load (startup)
+if (!process.env.DATABASE_URL) {
+  const error = 'FATAL: DATABASE_URL environment variable is not set. Application cannot start without a database connection.';
+  console.error(error);
+  throw new Error(error);
+}
+
+// Validate DATABASE_URL format
+try {
+  new URL(process.env.DATABASE_URL);
+} catch (urlError) {
+  const error = `FATAL: DATABASE_URL is not a valid URL: ${urlError.message}`;
+  console.error(error);
+  throw new Error(error);
+}
+
+const sql = neon(process.env.DATABASE_URL);
 
 export default sql;

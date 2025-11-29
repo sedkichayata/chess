@@ -1,4 +1,5 @@
 import sql from "@/app/api/utils/sql";
+import { requireAdmin, forbiddenResponse } from "@/app/api/utils/auth-helper";
 
 export async function GET(request, { params }) {
   try {
@@ -61,13 +62,16 @@ export async function GET(request, { params }) {
 }
 
 export async function PATCH(request, { params }) {
+  // Require admin authentication
+  const session = await requireAdmin(request);
+  if (!session) {
+    return forbiddenResponse();
+  }
+
   try {
     const { id } = params;
     const body = await request.json();
     const { is_verified } = body;
-
-    // TODO: Verify if the user is an admin. For now, assuming middleware or context handles it, or open for MVP.
-    // In a real app, I'd check `request.auth` or session.
 
     const [updated] = await sql`
       UPDATE clubs
