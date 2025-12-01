@@ -1,0 +1,49 @@
+Starting project at /tmp/cc-agent/60860651/project/apps/mobile
+Using src/app as the root directory for Expo Router.
+● Validation Warning:
+
+  Unknown option "fileMapCacheDirectory" with value "/tmp/cc-agent/60860651/project/apps/mobile/caches" was found.
+  This is probably a typing mistake. Fixing it will remove this message.
+
+Starting Metro Bundler
+Error while reading cache, falling back to a full crawl:
+ Error: Unable to deserialize cloned data due to invalid or unsupported version.
+    at deserialize (node:v8:435:7)
+    at DiskCacheManager.read (/tmp/cc-agent/60860651/project/apps/mobile/node_modules/metro-file-map/src/cache/DiskCacheManager.js:62:33)
+    at FileMap.read (/tmp/cc-agent/60860651/project/apps/mobile/node_modules/metro-file-map/src/index.js:285:14)
+    at /tmp/cc-agent/60860651/project/apps/mobile/node_modules/metro-file-map/src/index.js:183:25
+    at DependencyGraph.ready (/tmp/cc-agent/60860651/project/apps/mobile/node_modules/metro/src/node-haste/DependencyGraph.js:79:5)
+    at Bundler.ready (/tmp/cc-agent/60860651/project/apps/mobile/node_modules/metro/src/Bundler.js:51:5)
+    at IncrementalBundler.ready (/tmp/cc-agent/60860651/project/apps/mobile/node_modules/metro/src/IncrementalBundler.js:266:5)
+    at Server.ready (/tmp/cc-agent/60860651/project/apps/mobile/node_modules/metro/src/Server.js:1204:5)
+The following packages should be updated for best compatibility with the installed expo version:
+  @react-native-picker/picker@2.11.0 - expected version: 2.11.1
+  expo@53.0.11 - expected version: ~53.0.24
+  expo-image@2.2.1 - expected version: ~2.4.1
+  expo-router@5.1.0 - expected version: ~5.1.7
+  expo-web-browser@14.1.6 - expected version: ~14.2.0
+  react-native@0.79.3 - expected version: 0.79.6
+  react-native-svg@15.12.1 - expected version: 15.11.2
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web ./index.web.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.tsx ▓▓░░░░░░░░░░░░░░ 14.1% ( 26/116)
+Web ./index.web.tsx ▓▓▓░░░░░░░░░░░░░ 23.8% ( 97/199)
+Web ./index.web.tsx ▓▓▓▓▓▓░░░░░░░░░░ 40.7% (187/293)
+Web ./index.web.tsx ▓▓▓▓▓▓░░░░░░░░░░ 43.7% (258/435)
+Web ./index.web.tsx ▓▓▓▓▓▓░░░░░░░░░░ 43.7% (306/518)
+Web ./index.web.tsx ▓▓▓▓▓▓░░░░░░░░░░ 43.7% (358/544)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓░░░░░░░░ 50.9% (516/723)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓░░░░░░░░ 52.0% (614/858)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓░░░░░░░░ 52.3% ( 672/2546)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓░░░░░░░░ 52.3% ( 874/2716)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓░░░░░░░░ 52.3% (1021/2756)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓░░░░░░░░ 52.3% (1385/2756)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓░░░░░░░░ 52.3% (1879/2756)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.2% (2421/2756)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 88.8% (2673/2837)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.1% (2832/2925)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.4% (3020/3109)
+Web ./index.web.tsx ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 98.4% (3165/3190)
+Web Bundled 64345ms index.web.tsx (3192 modules)
