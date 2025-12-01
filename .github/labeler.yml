@@ -1,0 +1,20 @@
+# Automatically label PRs based on changed files
+
+mobile:
+  - apps/mobile/**/*
+
+web:
+  - apps/web/**/*
+
+documentation:
+  - "*.md"
+  - docs/**/*
+
+ci/cd:
+  - .github/workflows/**/*
+  - .github/actions/**/*
+
+dependencies:
+  - "**/package.json"
+  - "**/package-lock.json"
+  - "**/yarn.lock"
